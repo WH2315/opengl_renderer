@@ -1,5 +1,4 @@
 #include "wen.hpp"
-#include <glm/glm.hpp>
 
 struct Vertex {
     glm::vec3 position;
@@ -44,6 +43,9 @@ int main() {
     });
     VAO->attachVertexBuffer(VBO);
     VAO->attachIndexBuffer(IBO);
+
+    float offset = 0.3f;
+    program->setFloat("xOffset", offset);
 
     auto renderer = interface->createRenderer();
 
