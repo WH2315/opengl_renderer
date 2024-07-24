@@ -70,4 +70,22 @@ GLint convert(VertexType type) {
     }
 }
 
+template <>
+size_t convert(IndexType type) {
+    switch (type) {
+        case IndexType::eUInt16: return sizeof(uint16_t);
+        case IndexType::eUInt32: return sizeof(uint32_t);
+        default:                 return 0;
+    }
+}
+
+template <>
+GLenum convert(IndexType type) {
+    switch (type) {
+        case IndexType::eUInt16: return GL_UNSIGNED_SHORT;
+        case IndexType::eUInt32: return GL_UNSIGNED_INT;
+        default:                 return GL_NONE;
+    }
+}
+
 } // namespace wen

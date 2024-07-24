@@ -14,6 +14,7 @@ public:
     void bindShaderProgram(const std::shared_ptr<ShaderProgram>& shader_program) const;
     void bindVertexArray(const std::shared_ptr<VertexArray>& vertex_array) const;
     void draw(uint32_t vertex_count) const;
+    void drawIndexed(IndexType type, uint32_t index_count) const;
 };
 
 } // namespace wen

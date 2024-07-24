@@ -75,4 +75,10 @@ void VertexArray::attachVertexBuffer(const std::shared_ptr<VertexBuffer>& vertex
     this->unbind();
 }
 
+void VertexArray::attachIndexBuffer(const std::shared_ptr<IndexBuffer>& index_buffer) {
+    this->bind();
+    index_buffer->bind();
+    this->unbind();
+}
+
 } // namespace wen

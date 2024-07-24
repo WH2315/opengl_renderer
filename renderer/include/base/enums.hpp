@@ -19,4 +19,9 @@ enum class VertexType {
     eBool
 };
 
+enum class IndexType {
+    eUInt16,
+    eUInt32
+};
+
 } // namespace wen

@@ -23,4 +23,8 @@ void Renderer::draw(uint32_t vertex_count) const {
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
+void Renderer::drawIndexed(IndexType type, uint32_t index_count) const {
+    glDrawElements(GL_TRIANGLES, index_count, convert<GLenum>(type), nullptr);
+}
+
 } // namespace wen

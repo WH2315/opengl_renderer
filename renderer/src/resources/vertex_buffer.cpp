@@ -2,16 +2,10 @@
 
 namespace wen {
 
-VertexBuffer::VertexBuffer(uint32_t size) {
+VertexBuffer::VertexBuffer(uint32_t size) : size_(size) {
     glGenBuffers(1, &VBO_);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_);
     glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-}
-
-VertexBuffer::VertexBuffer(const void* data, uint32_t size) {
-    glGenBuffers(1, &VBO_);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
 VertexBuffer::~VertexBuffer() {
@@ -26,9 +20,9 @@ void VertexBuffer::unbind() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void VertexBuffer::setData(const void* data, uint32_t size) {
+void VertexBuffer::setData(const void* data, uint32_t offset) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+    glBufferSubData(GL_ARRAY_BUFFER, offset, size_, data);
 }
 
 void VertexBuffer::setVertexLayout(const VertexLayout layout) {

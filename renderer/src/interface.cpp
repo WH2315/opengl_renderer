@@ -22,8 +22,8 @@ std::shared_ptr<VertexBuffer> Interface::createVertexBuffer(uint32_t size) {
     return std::make_shared<VertexBuffer>(size);
 }
 
-std::shared_ptr<VertexBuffer> Interface::createVertexBuffer(const void* data, uint32_t size) {
-    return std::make_shared<VertexBuffer>(data, size);
+std::shared_ptr<IndexBuffer> Interface::createIndexBuffer(IndexType type, uint32_t count) {
+    return std::make_shared<IndexBuffer>(type, count);
 }
 
 std::shared_ptr<Renderer> Interface::createRenderer() {
