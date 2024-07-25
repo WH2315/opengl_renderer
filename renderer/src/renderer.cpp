@@ -19,6 +19,10 @@ void Renderer::bindVertexArray(const std::shared_ptr<VertexArray>& vertex_array)
     vertex_array->bind();
 }
 
+void Renderer::bindTexture2D(const std::shared_ptr<Texture2D>& texture, uint32_t slot) const {
+    texture->bind(slot);
+}
+
 void Renderer::draw(uint32_t vertex_count) const {
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }

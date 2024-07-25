@@ -24,4 +24,16 @@ enum class IndexType {
     eUInt32
 };
 
+enum class TextureFilter {
+    eNearest,
+    eLinear
+};
+
+enum class TextureWrap {
+    eRepeat,
+    eMirroredRepeat,
+    eClampToEdge,
+    eClampToBorder
+};
+
 } // namespace wen

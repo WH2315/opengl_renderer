@@ -88,4 +88,24 @@ GLenum convert(IndexType type) {
     }
 }
 
+template <>
+GLenum convert(TextureFilter filter) {
+    switch (filter) {
+        case TextureFilter::eNearest: return GL_NEAREST;
+        case TextureFilter::eLinear:  return GL_LINEAR;
+        default:                      return GL_NONE;
+    }
+}
+
+template <>
+GLenum convert(TextureWrap wrap) {
+    switch (wrap) {
+        case TextureWrap::eRepeat:         return GL_REPEAT;
+        case TextureWrap::eMirroredRepeat: return GL_MIRRORED_REPEAT;
+        case TextureWrap::eClampToEdge:    return GL_CLAMP_TO_EDGE;
+        case TextureWrap::eClampToBorder:  return GL_CLAMP_TO_BORDER;
+        default:                           return GL_NONE;
+    }
+}
+
 } // namespace wen

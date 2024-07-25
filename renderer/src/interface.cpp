@@ -4,6 +4,7 @@ namespace wen {
 
 Interface::Interface(const std::string& path) : path_(path) {
     shader_dir_ = path_ + "/shaders";
+    texture_dir_ = path_ + "/textures";
 }
 
 std::shared_ptr<Shader> Interface::createShader(const std::string& filename, ShaderStage stage) {
@@ -28,6 +29,10 @@ std::shared_ptr<IndexBuffer> Interface::createIndexBuffer(IndexType type, uint32
 
 std::shared_ptr<Renderer> Interface::createRenderer() {
     return std::make_shared<Renderer>();
+}
+
+std::shared_ptr<Texture2D> Interface::createTexture2D(const std::string& filename, const TextureInfos& infos) {
+    return std::make_shared<Texture2D>(texture_dir_ + "/" + filename, infos);
 }
 
 } // namespace wen
