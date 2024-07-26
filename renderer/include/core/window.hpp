@@ -19,10 +19,16 @@ public:
     bool shouldClose() const;
     void pollEvents() const;
 
+    auto getWindow() const { return window_; }
+    auto getData() const { return data_; }
+
 private:
     GLFWwindow* window_;
+    struct WindowData {
+        uint32_t width, height;
+    } data_;
 };
 
 extern Window* g_window;
 
-}
+} // namespace wen

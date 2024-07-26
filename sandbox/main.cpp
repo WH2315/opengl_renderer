@@ -1,10 +1,8 @@
 #include "wen.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
-struct Vertex {
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec2 tex_coords;
-};
+float delta_time = 0.0f;
+float last_frame = 0.0f;
 
 int main() {
     auto manager = new wen::Manager;
@@ -21,33 +19,59 @@ int main() {
             .attach(frag)
             .link();
     
-    std::vector<Vertex> vertices = {
-        {{0.5f, 0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {2.0f, 2.0f}},   // 右上角
-        {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {2.0f, 0.0f}},  // 右下角
-        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // 左下角
-        {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 2.0f}}   // 左上角
-    };
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    std::vector<uint16_t> indices = {
-        0, 1, 3, 1, 2, 3
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     auto VAO = interface->createVertexArray();
-    auto VBO = interface->createVertexBuffer(sizeof(Vertex) * vertices.size());
-    VBO->setData(vertices.data());
-    auto IBO = interface->createIndexBuffer(wen::IndexType::eUInt16, indices.size());
-    IBO->setData(indices.data());
+    auto VBO = interface->createVertexBuffer(sizeof(vertices));
+    VBO->setData(vertices);
 
     VBO->setVertexLayout({
         {"positon", wen::VertexType::eFloat3},
-        {"color", wen::VertexType::eFloat3},
         {"tex_coords", wen::VertexType::eFloat2}
     });
     VAO->attachVertexBuffer(VBO);
-    VAO->attachIndexBuffer(IBO);
-
-    float offset = 0.3f;
-    program->setFloat("x_offset", offset);
 
     auto texture1 = interface->createTexture2D(
         "container.jpg",
@@ -64,15 +88,32 @@ int main() {
 
     auto renderer = interface->createRenderer();
 
+    auto camera = new wen::Camera();
+
     while (!manager->shouldClose()) {
         manager->pollEvents();
+
+        float current_frame = static_cast<float>(glfwGetTime());
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+        camera->update(delta_time);
+
         renderer->setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         renderer->bindShaderProgram(program);
         renderer->bindVertexArray(VAO);
         renderer->bindTexture2D(texture1, 0);
         renderer->bindTexture2D(texture2, 1);
-        // renderer->draw(3);
-        renderer->drawIndexed(wen::IndexType::eUInt16, indices.size());
+
+        glm::mat4 model = glm::mat4(1.0f);
+        float angle = current_frame * 30.0f;;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+        program->setMat4("model", model);
+        program->setMat4("view", camera->data.view);
+        program->setMat4("project", camera->data.project);
+
+        renderer->draw(36);
+        VAO->unbind();
     }
 
     renderer.reset();
@@ -80,7 +121,6 @@ int main() {
     texture2.reset();
     VAO.reset();
     VBO.reset();
-    IBO.reset();
     program.reset();
     vert.reset();
     frag.reset();

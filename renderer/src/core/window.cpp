@@ -7,6 +7,8 @@ Window* g_window = nullptr;
 
 Window::Window(const WindowInfo& info) {
     WEN_INFO("Create window:({0}, {1}, {2})", info.title, info.width, info.height)
+    data_.width = info.width;
+    data_.height = info.height;
 
     if (!glfwInit()) {
         WEN_ERROR("Failed to init glfw!")
@@ -30,7 +32,12 @@ Window::Window(const WindowInfo& info) {
     WEN_DEBUG(" OpenGL Renderer: {0}", (char*)glGetString(GL_RENDERER))
     WEN_DEBUG(" OpenGL Version:  {0}", (char*)glGetString(GL_VERSION))
 
+    glfwSetWindowUserPointer(window_, &data_);
+
     glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width, int height) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        data.width = width;
+        data.height = height;
         glViewport(0, 0, width, height);
     });
 }

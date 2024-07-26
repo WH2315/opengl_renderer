@@ -2,13 +2,15 @@
 
 namespace wen {
 
-Renderer::Renderer() {}
+Renderer::Renderer() {
+    glEnable(GL_DEPTH_TEST);
+}
 
 Renderer::~Renderer() {}
 
 void Renderer::setClearColor(float r, float g, float b, float a) const {
     glClearColor(r, g, b, a);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::bindShaderProgram(const std::shared_ptr<ShaderProgram>& shader_program) const {
