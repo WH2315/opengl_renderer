@@ -32,6 +32,8 @@ Window::Window(const WindowInfo& info) {
     WEN_DEBUG(" OpenGL Renderer: {0}", (char*)glGetString(GL_RENDERER))
     WEN_DEBUG(" OpenGL Version:  {0}", (char*)glGetString(GL_VERSION))
 
+    glfwSwapInterval(0);
+
     glfwSetWindowUserPointer(window_, &data_);
 
     glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width, int height) {

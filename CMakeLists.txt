@@ -15,3 +15,8 @@ option(BUILD_SANDBOX "build sandbox" ON)
 if (BUILD_SANDBOX)
     add_subdirectory(sandbox)
 endif()
+
+option(BUILD_EXAMPLE "build example" OFF)
+if (BUILD_EXAMPLE)
+    add_subdirectory(example)
+endif()
