@@ -4,9 +4,6 @@
 float delta_time = 0.0f;
 float last_frame = 0.0f;
 glm::vec3 light_position(1.2f, 1.0f, 2.0f);
-glm::vec3 light_color(1.0f, 1.0f, 1.0f);
-
-glm::vec3 object_color(1.0f, 0.5f, 0.31f);
 
 int main() {
     auto manager = new wen::Manager;
@@ -114,11 +111,15 @@ int main() {
         cube_program->setMat4("model", model);
         cube_program->setMat4("view", camera->data.view);
         cube_program->setMat4("project", camera->data.project);
-
-        cube_program->setVec3("light_position", light_position);
+        cube_program->setVec3("material.ambient",  glm::vec3(1.0f, 0.5f, 0.31f))
+                     .setVec3("material.diffuse",  glm::vec3(1.0f, 0.5f, 0.31f))
+                     .setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f))
+                     .setFloat("material.shininess", 32.0f);
+        cube_program->setVec3("light.position", light_position)
+                     .setVec3("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f))
+                     .setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f))
+                     .setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); 
         cube_program->setVec3("view_position", camera->data.position);
-        cube_program->setVec3("light_color",  light_color);
-        cube_program->setVec3("object_color", object_color);
         renderer->draw(36);
 
         renderer->bindShaderProgram(light_program);
@@ -129,7 +130,6 @@ int main() {
         light_program->setMat4("model", model);
         light_program->setMat4("view", camera->data.view);
         light_program->setMat4("project", camera->data.project);
-        light_program->setVec3("light_color", light_color);
         renderer->draw(36);
 
         imgui->begin();
@@ -137,8 +137,6 @@ int main() {
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
         ImGui::End();
         ImGui::Begin("Scene");
-        ImGui::ColorEdit3("light color", glm::value_ptr(light_color));
-        ImGui::ColorEdit3("object color", glm::value_ptr(object_color));
         ImGui::End();
         imgui->end();
     }
