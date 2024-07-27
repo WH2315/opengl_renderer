@@ -89,6 +89,8 @@ int main() {
     auto renderer = interface->createRenderer();
 
     auto camera = new wen::Camera();
+    
+    auto imgui = new wen::Imgui();
 
     while (!manager->shouldClose()) {
         manager->pollEvents();
@@ -113,8 +115,14 @@ int main() {
         program->setMat4("project", camera->data.project);
 
         renderer->draw(36);
-        VAO->unbind();
+
+        imgui->begin();
+        ImGui::ShowDemoWindow();
+        imgui->end();
     }
+
+    delete imgui;
+    delete camera;
 
     renderer.reset();
     texture1.reset();
