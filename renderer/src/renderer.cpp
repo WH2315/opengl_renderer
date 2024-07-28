@@ -13,11 +13,8 @@ void Renderer::setClearColor(float r, float g, float b, float a) const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::bindShaderProgram(const std::shared_ptr<ShaderProgram>& shader_program) const {
+void Renderer::bindResources(const std::shared_ptr<ShaderProgram>& shader_program, const std::shared_ptr<VertexArray>& vertex_array) const {
     shader_program->bind();
-}
-
-void Renderer::bindVertexArray(const std::shared_ptr<VertexArray>& vertex_array) const {
     vertex_array->bind();
 }
 

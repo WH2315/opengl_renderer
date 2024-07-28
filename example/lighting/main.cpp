@@ -86,8 +86,15 @@ int main() {
 
     auto container = interface->createTexture2D("lighting/container2.png");
     auto container_specular = interface->createTexture2D("lighting/container2_specular.png");
+
+    cube_program->bind();
     cube_program->setInt("material.diffuse", 0)
-                 .setInt("material.specular", 1);
+                 .setInt("material.specular", 1)
+                 .setFloat("material.shininess", 32.0f);
+    cube_program->setVec3("dir_light.direction", glm::vec3(-0.2f, -1.0f, -0.3f))
+                 .setVec3("dir_light.ambient", glm::vec3(0.05f, 0.05f, 0.05f))
+                 .setVec3("dir_light.diffuse", glm::vec3(0.4f, 0.4f, 0.4f))
+                 .setVec3("dir_light.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
     auto renderer = interface->createRenderer();
 
@@ -96,6 +103,19 @@ int main() {
     camera->upload();
 
     auto imgui = new wen::Imgui();
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
 
     while (!manager->shouldClose()) {
         manager->pollEvents();
@@ -109,27 +129,42 @@ int main() {
 
         light_position.x = 1.0f + sin(current_frame) * 2.0f;
         light_position.y = sin(current_frame / 2.0f) * 1.0f;
+        light_position.z = cos(current_frame) * 2.0f;
 
-        renderer->bindShaderProgram(cube_program);
-        renderer->bindVertexArray(cube_VAO);
+        renderer->bindResources(cube_program, cube_VAO);
         renderer->bindTexture2D(container, 0);
-        renderer->bindTexture2D(container, 1);
-        glm::mat4 model = glm::mat4(1.0f);
-        float angle = current_frame * 30.0f;;
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        cube_program->setMat4("model", model);
+        renderer->bindTexture2D(container_specular, 1);
         cube_program->setMat4("view", camera->data.view);
         cube_program->setMat4("project", camera->data.project);
-        cube_program->setFloat("material.shininess", 32.0f);
-        cube_program->setVec3("light.position", light_position)
-                     .setVec3("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f))
-                     .setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f))
-                     .setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); 
+        cube_program->setVec3("point_light.position", light_position)
+                     .setVec3("point_light.ambient", glm::vec3(0.2f, 0.2f, 0.2f))
+                     .setVec3("point_light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f))
+                     .setVec3("point_light.specular", glm::vec3(1.0f, 1.0f, 1.0f))
+                     .setFloat("point_light.constant", 1.0f)
+                     .setFloat("point_light.linear", 0.09f)
+                     .setFloat("point_light.quadratic", 0.032f);
+        cube_program->setVec3("spotlight.position", camera->data.position)
+                     .setVec3("spotlight.direction", camera->direction)
+                     .setVec3("spotlight.ambient", glm::vec3(0.0f, 0.0f, 0.0f))
+                     .setVec3("spotlight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f))
+                     .setVec3("spotlight.specular", glm::vec3(1.0f, 1.0f, 1.0f))
+                     .setFloat("spotlight.constant", 1.0f)
+                     .setFloat("spotlight.linear", 0.09f)
+                     .setFloat("spotlight.quadratic", 0.032f)
+                     .setFloat("spotlight.cut_off", glm::cos(glm::radians(12.5f)))
+                     .setFloat("spotlight.outer_cut_off", glm::cos(glm::radians(15.0f)));
         cube_program->setVec3("view_position", camera->data.position);
-        renderer->draw(36);
+        glm::mat4 model = glm::mat4(1.0f);
+        for (unsigned int i = 0; i < 10; i++) {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle) * (i % 3 == 0 ? 1.0f : -1.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+            cube_program->setMat4("model", model);
+            renderer->draw(36);
+        }
 
-        renderer->bindShaderProgram(light_program);
-        renderer->bindVertexArray(light_VAO);
+        renderer->bindResources(light_program, light_VAO);
         model = glm::mat4(1.0f);
         model = glm::translate(model, light_position);
         model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
@@ -141,8 +176,6 @@ int main() {
         imgui->begin();
         ImGui::Begin("Settings");
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-        ImGui::End();
-        ImGui::Begin("Scene");
         ImGui::End();
         imgui->end();
     }

@@ -21,7 +21,6 @@ ShaderProgram& ShaderProgram::attach(const std::shared_ptr<Shader>& shader) {
 ShaderProgram& ShaderProgram::link() {
     glLinkProgram(program_);
     checkLinkErrors(program_);
-    this->bind();
     return *this;
 }
 

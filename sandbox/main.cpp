@@ -83,6 +83,8 @@ int main() {
         } 
     );
     auto texture2 = interface->createTexture2D("awesomeface.png");
+
+    program->bind();
     program->setInt("texture1", 0)
             .setInt("texture2", 1);
 
@@ -101,8 +103,7 @@ int main() {
         camera->update(delta_time);
 
         renderer->setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        renderer->bindShaderProgram(program);
-        renderer->bindVertexArray(VAO);
+        renderer->bindResources(program, VAO);
         renderer->bindTexture2D(texture1, 0);
         renderer->bindTexture2D(texture2, 1);
 
