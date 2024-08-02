@@ -5,6 +5,7 @@ namespace wen {
 Interface::Interface(const std::string& path) : path_(path) {
     shader_dir_ = path_ + "/shaders";
     texture_dir_ = path_ + "/textures";
+    model_dir_ = path_ + "/models";
 }
 
 std::shared_ptr<Shader> Interface::createShader(const std::string& filename, ShaderStage stage) {
@@ -33,6 +34,10 @@ std::shared_ptr<Renderer> Interface::createRenderer() {
 
 std::shared_ptr<Texture2D> Interface::createTexture2D(const std::string& filename, const TextureInfos& infos) {
     return std::make_shared<Texture2D>(texture_dir_ + "/" + filename, infos);
+}
+
+std::shared_ptr<Model> Interface::loadModel(const std::string& filename) {
+    return std::make_shared<Model>(model_dir_ + "/" + filename);
 }
 
 } // namespace wen

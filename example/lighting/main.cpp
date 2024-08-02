@@ -163,6 +163,7 @@ int main() {
             cube_program->setMat4("model", model);
             renderer->draw(36);
         }
+        renderer->unbindResources(cube_program, cube_VAO);
 
         renderer->bindResources(light_program, light_VAO);
         model = glm::mat4(1.0f);
@@ -172,6 +173,7 @@ int main() {
         light_program->setMat4("view", camera->data.view);
         light_program->setMat4("project", camera->data.project);
         renderer->draw(36);
+        renderer->unbindResources(light_program, light_VAO);
 
         imgui->begin();
         ImGui::Begin("Settings");

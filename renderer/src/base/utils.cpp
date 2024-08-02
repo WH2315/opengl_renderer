@@ -93,6 +93,7 @@ GLenum convert(TextureFilter filter) {
     switch (filter) {
         case TextureFilter::eNearest: return GL_NEAREST;
         case TextureFilter::eLinear:  return GL_LINEAR;
+        case TextureFilter::eLinearMipmapLinear: return GL_LINEAR_MIPMAP_LINEAR;
         default:                      return GL_NONE;
     }
 }

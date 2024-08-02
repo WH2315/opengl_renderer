@@ -15,7 +15,9 @@ void Renderer::setClearColor(float r, float g, float b, float a) const {
 
 void Renderer::bindResources(const std::shared_ptr<ShaderProgram>& shader_program, const std::shared_ptr<VertexArray>& vertex_array) const {
     shader_program->bind();
-    vertex_array->bind();
+    if (vertex_array != nullptr) {
+        vertex_array->bind();
+    } 
 }
 
 void Renderer::bindTexture2D(const std::shared_ptr<Texture2D>& texture, uint32_t slot) const {
@@ -28,6 +30,17 @@ void Renderer::draw(uint32_t vertex_count) const {
 
 void Renderer::drawIndexed(IndexType type, uint32_t index_count) const {
     glDrawElements(GL_TRIANGLES, index_count, convert<GLenum>(type), nullptr);
+}
+
+void Renderer::drawModel(const std::shared_ptr<Model>& model, const std::shared_ptr<ShaderProgram>& shader_program, uint32_t count) const {
+    model->draw(shader_program, count);
+}
+
+void Renderer::unbindResources(const std::shared_ptr<ShaderProgram>& shader_program, const std::shared_ptr<VertexArray>& vertex_array) const {
+    vertex_array->unbind();
+    if (vertex_array != nullptr) {
+        vertex_array->unbind();
+    } 
 }
 
 } // namespace wen

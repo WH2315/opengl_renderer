@@ -26,7 +26,8 @@ enum class IndexType {
 
 enum class TextureFilter {
     eNearest,
-    eLinear
+    eLinear,
+    eLinearMipmapLinear,
 };
 
 enum class TextureWrap {

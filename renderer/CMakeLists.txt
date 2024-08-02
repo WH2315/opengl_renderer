@@ -7,4 +7,4 @@ add_library(${PROJECT_NAME} STATIC ${SRC} ${HEADERS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include ../3rdlibs/stb_image)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog glfw glad glm imgui)
+target_link_libraries(${PROJECT_NAME} PUBLIC spdlog glfw glad glm imgui assimp)

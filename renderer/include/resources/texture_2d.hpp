@@ -15,13 +15,15 @@ struct TextureInfos {
 
 class Texture2D final {
 public:
-    Texture2D(const std::string& filename, const TextureInfos& infos);
+    Texture2D(const std::string& filename, const TextureInfos& infos = {});
     Texture2D(uint32_t width, uint32_t height);
     ~Texture2D();
 
     void bind(uint32_t slot = 0) const;
 
     void setData(const void* data);
+
+    uint32_t getTexture() const { return texture_; }
 
 private:
     uint32_t texture_;

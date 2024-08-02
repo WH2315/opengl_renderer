@@ -10,3 +10,6 @@
 [submodule "3rdlibs/imgui"]
 	path = 3rdlibs/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "3rdlibs/assimp"]
+	path = 3rdlibs/assimp
+	url = https://github.com/assimp/assimp.git

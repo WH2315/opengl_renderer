@@ -117,6 +117,8 @@ int main() {
 
         renderer->draw(36);
 
+        renderer->unbindResources(program, VAO);
+
         imgui->begin();
         ImGui::ShowDemoWindow();
         imgui->end();

@@ -7,6 +7,7 @@
 #include "resources/index_buffer.hpp"
 #include "renderer.hpp"
 #include "resources/texture_2d.hpp"
+#include "resources/model.hpp"
 
 namespace wen {
 
@@ -21,11 +22,13 @@ public:
     std::shared_ptr<IndexBuffer> createIndexBuffer(IndexType type, uint32_t count);
     std::shared_ptr<Renderer> createRenderer();
     std::shared_ptr<Texture2D> createTexture2D(const std::string& filename, const TextureInfos& infos = {});
+    std::shared_ptr<Model> loadModel(const std::string& filename);
 
 private:
     std::string path_;
     std::string shader_dir_;
     std::string texture_dir_;
+    std::string model_dir_;
 };
 
 } // namespace wen

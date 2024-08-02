@@ -2,6 +2,7 @@
 
 #include "base/enums.hpp"
 #include <string>
+#include <cstdint>
 
 namespace wen {
 
