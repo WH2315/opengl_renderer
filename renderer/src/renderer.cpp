@@ -5,6 +5,7 @@ namespace wen {
 Renderer::Renderer() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
+    glEnable(GL_BLEND);
 }
 
 Renderer::~Renderer() {}
