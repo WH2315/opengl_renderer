@@ -84,8 +84,8 @@ int main() {
     cube_VAO->attachVertexBuffer(VBO);
     light_VAO->attachVertexBuffer(VBO);
 
-    auto container = interface->createTexture2D("lighting/container2.png");
-    auto container_specular = interface->createTexture2D("lighting/container2_specular.png");
+    auto container = interface->createTexture2D("container2.png");
+    auto container_specular = interface->createTexture2D("container2_specular.png");
 
     cube_program->bind();
     cube_program->setInt("material.diffuse", 0)

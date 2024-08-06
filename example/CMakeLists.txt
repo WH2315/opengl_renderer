@@ -1,2 +1,3 @@
 add_subdirectory(lighting)
 add_subdirectory(model_loading)
+add_subdirectory(geometry)

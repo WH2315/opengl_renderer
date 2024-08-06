@@ -108,10 +108,10 @@ uint32_t Model::createTexture(const std::string& name) {
     std::string filename = directory_ + '/' + name;
 
     auto texture = new Texture2D(filename, {
-        .min_filter = wen::TextureFilter::eLinearMipmapLinear,
-        .mag_filter = wen::TextureFilter::eLinear,
-        .wrap_s = wen::TextureWrap::eRepeat,
-        .wrap_t = wen::TextureWrap::eRepeat
+        .min_filter = TextureFilter::eLinearMipmapLinear,
+        .mag_filter = TextureFilter::eLinear,
+        .wrap_s = TextureWrap::eRepeat,
+        .wrap_t = TextureWrap::eRepeat
     });
 
     return texture->getTexture();

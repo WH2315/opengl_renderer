@@ -4,13 +4,14 @@ namespace wen {
 
 Renderer::Renderer() {
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
 }
 
 Renderer::~Renderer() {}
 
 void Renderer::setClearColor(float r, float g, float b, float a) const {
     glClearColor(r, g, b, a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Renderer::bindResources(const std::shared_ptr<ShaderProgram>& shader_program, const std::shared_ptr<VertexArray>& vertex_array) const {
@@ -34,6 +35,10 @@ void Renderer::drawIndexed(IndexType type, uint32_t index_count) const {
 
 void Renderer::drawModel(const std::shared_ptr<Model>& model, const std::shared_ptr<ShaderProgram>& shader_program, uint32_t count) const {
     model->draw(shader_program, count);
+}
+
+void Renderer::drawGeometry(const std::shared_ptr<GeometryBuffer>& geometry) {
+    geometry->draw();
 }
 
 void Renderer::unbindResources(const std::shared_ptr<ShaderProgram>& shader_program, const std::shared_ptr<VertexArray>& vertex_array) const {

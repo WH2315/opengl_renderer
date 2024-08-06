@@ -13,8 +13,8 @@ int main() {
 
     auto vert = interface->createShader("model_loading/model.vert", wen::ShaderStage::eVertex);
     auto frag = interface->createShader("model_loading/model.frag", wen::ShaderStage::eFragment);
-    auto light_vert = interface->createShader("lighting/light.vert", wen::ShaderStage::eVertex);
-    auto light_frag = interface->createShader("lighting/light.frag", wen::ShaderStage::eFragment);
+    auto light_vert = interface->createShader("model_loading/light.vert", wen::ShaderStage::eVertex);
+    auto light_frag = interface->createShader("model_loading/light.frag", wen::ShaderStage::eFragment);
 
     auto program = interface->createShaderProgram();
     program->attach(vert)
