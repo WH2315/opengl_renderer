@@ -8,6 +8,7 @@ namespace wen {
 Camera::Camera() {
     data.position = glm::vec3(0.0f, 0.0f, 3.0f);
     direction = glm::vec3(0.0f, 0.0f, -1.0f);
+    width = g_window->getData().width, height = g_window->getData().height;
     upload();
 }
 
@@ -71,10 +72,16 @@ void Camera::update(float ts) {
     upload();
 }
 
+void Camera::resize(uint32_t width, uint32_t height) {
+    this->width = width;
+    this->height = height;
+    upload();
+}
+
 void Camera::upload() {
     data.view = glm::lookAt(data.position, data.position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
-    auto w = static_cast<float>(g_window->getData().width);
-    auto h = static_cast<float>(g_window->getData().height);
+    auto w = static_cast<float>(width);
+    auto h = static_cast<float>(height);
     data.project = glm::perspective(glm::radians(60.0f), w / h, 0.1f, 100.0f);
 }
 

@@ -40,4 +40,8 @@ std::shared_ptr<Model> Interface::loadModel(const std::string& filename) {
     return std::make_shared<Model>(model_dir_ + "/" + filename);
 }
 
+std::shared_ptr<Framebuffer> Interface::createFramebuffer(const FramebufferAttachment& framebuffer_attachment) {
+    return std::make_shared<Framebuffer>(framebuffer_attachment);
+}
+
 } // namespace wen

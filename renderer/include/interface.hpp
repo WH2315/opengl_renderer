@@ -8,6 +8,7 @@
 #include "renderer.hpp"
 #include "resources/texture_2d.hpp"
 #include "resources/model.hpp"
+#include "resources/framebuffer.hpp"
 
 namespace wen {
 
@@ -23,6 +24,7 @@ public:
     std::shared_ptr<Renderer> createRenderer();
     std::shared_ptr<Texture2D> createTexture2D(const std::string& filename, const TextureInfos& infos = {});
     std::shared_ptr<Model> loadModel(const std::string& filename);
+    std::shared_ptr<Framebuffer> createFramebuffer(const FramebufferAttachment& framebuffer_attachment);
 
 private:
     std::string path_;

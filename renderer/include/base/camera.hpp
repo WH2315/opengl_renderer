@@ -9,6 +9,7 @@ public:
     Camera();
 
     void update(float ts);
+    void resize(uint32_t width, uint32_t height);
     void upload();
 
     struct CameraData {
@@ -19,6 +20,8 @@ public:
 
     glm::vec3 direction;
     bool cursor_locked = false;
+
+    uint32_t width, height;
 };
 
 } // namespace wen

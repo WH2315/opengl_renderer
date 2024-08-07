@@ -4,6 +4,44 @@
 #include <glm/gtc/type_ptr.hpp>
 
 bool is_draw_outline = false;
+glm::vec2 ViewportSize;
+
+void imgui_dockspace_begin() {
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    window_flags |= ImGuiWindowFlags_NoTitleBar |
+                    ImGuiWindowFlags_NoCollapse |
+                    ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus |
+                    ImGuiWindowFlags_NoNavFocus;
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) {
+        window_flags |= ImGuiWindowFlags_NoBackground;
+    }
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(2);
+
+    // DockSpace
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    }
+}
+
+void imgui_dockspace_end() {
+    ImGui::End();
+}
 
 int main() {
     auto manager = new wen::Manager;
@@ -69,9 +107,25 @@ int main() {
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    wen::FramebufferAttachment framebuffer_attachment = {
+        .width = 600,
+        .height = 600,
+        .attachment = {
+            wen::AttachmentType::eColor,
+            wen::AttachmentType::eDepthStencil
+        }
+    };
+    auto framebuffer = interface->createFramebuffer(framebuffer_attachment);
     
     while (!manager->shouldClose()) {
         manager->pollEvents();
+
+        if (auto a = framebuffer->getFramebufferAttachment();
+            ViewportSize.x > 0 && ViewportSize.y > 0 && (a.width != ViewportSize.x || a.height != ViewportSize.y)) {
+            framebuffer->resize(ViewportSize.x, ViewportSize.y);
+            camera->resize(ViewportSize.x, ViewportSize.y);
+        }
 
         camera->update(ImGui::GetIO().DeltaTime);
 
@@ -89,6 +143,8 @@ int main() {
         light_position.x = 1.0f + sin(time) * 2.0f;
         light_position.y = sin(time / 2.0f) * 1.0f;
         light_position.z = cos(time) * 2.0f;
+
+        framebuffer->bind();
 
         renderer->setClearColor(0.0, 0.0f, 0.0f, 1.0f);
 
@@ -176,17 +232,35 @@ int main() {
         }
         renderer->unbindResources(program);
 
+        framebuffer->unbind();
+
         imgui->begin();
+        imgui_dockspace_begin(); 
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Exit")) {}
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
         ImGui::Begin("Settings");
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
         ImGui::Checkbox("Draw Outline", &is_draw_outline);
         ImGui::End();
+        ImGui::Begin("Scene");
+        ViewportSize = {ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y};
+        ImGui::Image(reinterpret_cast<void*>(framebuffer->getTexture()),
+                     ImVec2{ViewportSize.x, ViewportSize.y}, ImVec2{0, 1},
+                     ImVec2{1, 0});
+        ImGui::End();
+        imgui_dockspace_end();
         imgui->end();
     }
 
     delete imgui;
     delete camera;
 
+    framebuffer.reset();
     renderer.reset();
     texture1.reset();
     texture2.reset();
