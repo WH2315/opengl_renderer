@@ -1,4 +1,5 @@
 #include "wen.hpp"
+#include "../skybox.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -75,6 +76,23 @@ int main() {
     light_program->attach(vert)
             .attach(light_frag)
             .link();
+    
+    auto _model = interface->loadModel("nanosuit/nanosuit.obj");
+    auto modle_frag = interface->createShader("geometry/model.frag", wen::ShaderStage::eFragment);
+    auto model_program = interface->createShaderProgram();
+    model_program->attach(vert)
+            .attach(modle_frag)
+            .link();
+    
+    auto skybox_cube = std::make_shared<wen::BoxGeometry>();
+    auto skybox_vert = interface->createShader("skybox.vert", wen::ShaderStage::eVertex);
+    auto skybox_frag = interface->createShader("skybox.frag", wen::ShaderStage::eFragment);
+    auto skybox_program = interface->createShaderProgram();
+    skybox_program->attach(skybox_vert)
+            .attach(skybox_frag)
+            .link();
+    
+    auto _skybox = new skybox(skybox_program);
 
     auto texture1 = interface->createTexture2D("marble.jpg");
     auto texture2 = interface->createTexture2D("metal.png");
@@ -87,6 +105,9 @@ int main() {
 
     program->bind();
     program->setInt("texture1", 0);
+
+    model_program->bind();
+    model_program->setInt("skybox", 0);
 
     std::vector<glm::vec3> windows;
     windows.push_back(glm::vec3(-1.5f+0.5f,  0.0f, -0.48f));
@@ -221,6 +242,27 @@ int main() {
         renderer->drawGeometry(light);
         renderer->unbindResources(light_program);
 
+        // draw model
+        renderer->bindResources(model_program);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-2.5f, -0.5f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.2f));
+        model_program->setMat4("model", model)
+                      .setMat4("view", camera->data.view)
+                      .setMat4("project", camera->data.project);
+        model_program->setVec3("view_position", camera->data.position);
+        renderer->drawModel(_model, model_program);
+        renderer->unbindResources(model_program);
+
+        // draw skybox
+        glDepthFunc(GL_LEQUAL);
+        renderer->bindResources(skybox_program);
+        skybox_program->setMat4("view", glm::mat4(glm::mat3(camera->data.view)))
+                       .setMat4("project", camera->data.project);
+        renderer->drawGeometry(skybox_cube);
+        renderer->unbindResources(skybox_program);
+        glDepthFunc(GL_LESS);
+
         // draw windows
         renderer->bindResources(program);
         renderer->bindTexture2D(window, 0);
@@ -265,6 +307,13 @@ int main() {
     texture1.reset();
     texture2.reset();
     window.reset();
+    skybox_program.reset();
+    skybox_vert.reset();
+    skybox_frag.reset();
+    skybox_cube.reset();
+    model_program.reset();
+    modle_frag.reset();
+    _model.reset();
     light_program.reset();
     light_frag.reset();
     light.reset();

@@ -54,6 +54,8 @@ std::shared_ptr<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
         if (mesh->HasNormals()) {
             vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+        } else {
+            vertex.normal = {0.0f, 0.0f, 0.0f};
         }
         if (mesh->mTextureCoords[0]) {
             vertex.tex_coords = {mesh->mTextureCoords[0][i].x, 1 - mesh->mTextureCoords[0][i].y};
