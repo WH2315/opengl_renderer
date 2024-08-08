@@ -44,4 +44,8 @@ std::shared_ptr<Framebuffer> Interface::createFramebuffer(const FramebufferAttac
     return std::make_shared<Framebuffer>(framebuffer_attachment);
 }
 
+std::shared_ptr<UniformBuffer> Interface::createUniformBuffer(uint32_t size, uint32_t binding) {
+    return std::make_shared<UniformBuffer>(size, binding);
+}
+
 } // namespace wen

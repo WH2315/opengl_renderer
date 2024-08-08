@@ -109,6 +109,8 @@ int main() {
     model_program->bind();
     model_program->setInt("skybox", 0);
 
+    auto camera_uniforms = interface->createUniformBuffer(sizeof(wen::Camera::CameraData), 0);
+
     std::vector<glm::vec3> windows;
     windows.push_back(glm::vec3(-1.5f+0.5f,  0.0f, -0.48f));
     windows.push_back(glm::vec3( 1.5f+0.5f,  0.0f,  0.51f));
@@ -152,7 +154,7 @@ int main() {
 
         std::map<float, glm::vec3> sorted;
         for (uint32_t i = 0; i < windows.size(); i++) {
-            float distance = glm::length(camera->data.position - windows[i]);
+            float distance = glm::length(camera->position - windows[i]);
             sorted[distance] = windows[i];
         }
 
@@ -169,13 +171,13 @@ int main() {
 
         renderer->setClearColor(0.0, 0.0f, 0.0f, 1.0f);
 
+        camera_uniforms->setData(&camera->data, sizeof(wen::Camera::CameraData));
+
         glStencilMask(0x00);
         renderer->bindResources(program);
         glm::mat4 model = glm::mat4(1.0f);
-        program->setMat4("view", camera->data.view)
-                .setMat4("project", camera->data.project);
         program->setVec3("light_position", light_position)
-                .setVec3("view_position", camera->data.position);
+                .setVec3("view_position", camera->position);
         // draw floor
         renderer->bindTexture2D(texture2, 0);
         model = glm::translate(model, glm::vec3(0.0f, -0.51f, 0.0f));
@@ -205,8 +207,6 @@ int main() {
             glStencilMask(0x00); // 禁止模板缓冲的写入
             glDisable(GL_DEPTH_TEST);
             renderer->bindResources(stencil_program);
-            stencil_program->setMat4("view", camera->data.view)
-                            .setMat4("project", camera->data.project);
             float scale = 1.1f;
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
@@ -236,9 +236,7 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(light_position));
         model = glm::scale(model, glm::vec3(0.2f));
-        light_program->setMat4("model", model)
-                      .setMat4("view", camera->data.view)
-                      .setMat4("project", camera->data.project);
+        light_program->setMat4("model", model);
         renderer->drawGeometry(light);
         renderer->unbindResources(light_program);
 
@@ -247,10 +245,8 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-2.5f, -0.5f, 0.0f));
         model = glm::scale(model, glm::vec3(0.2f));
-        model_program->setMat4("model", model)
-                      .setMat4("view", camera->data.view)
-                      .setMat4("project", camera->data.project);
-        model_program->setVec3("view_position", camera->data.position);
+        model_program->setMat4("model", model);
+        model_program->setVec3("view_position", camera->position);
         renderer->drawModel(_model, model_program);
         renderer->unbindResources(model_program);
 
@@ -307,6 +303,7 @@ int main() {
     texture1.reset();
     texture2.reset();
     window.reset();
+    camera_uniforms.reset();
     skybox_program.reset();
     skybox_vert.reset();
     skybox_frag.reset();

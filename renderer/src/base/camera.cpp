@@ -6,7 +6,7 @@
 namespace wen {
 
 Camera::Camera() {
-    data.position = glm::vec3(0.0f, 0.0f, 3.0f);
+    position = glm::vec3(0.0f, 0.0f, 3.0f);
     direction = glm::vec3(0.0f, 0.0f, -1.0f);
     width = g_window->getData().width, height = g_window->getData().height;
     upload();
@@ -45,19 +45,19 @@ void Camera::update(float ts) {
     glm::vec3 right_direction = glm::cross(direction, up_direction);
     float speed = 3.0f;
     if (glfwGetKey(window, GLFW_KEY_W)) {
-        data.position += direction * speed * ts;
+        position += direction * speed * ts;
     } else if (glfwGetKey(window, GLFW_KEY_S)) {
-        data.position -= direction * speed * ts;
+        position -= direction * speed * ts;
     }
     if (glfwGetKey(window, GLFW_KEY_A)) {
-        data.position -= right_direction * speed * ts;
+        position -= right_direction * speed * ts;
     } else if (glfwGetKey(window, GLFW_KEY_D)) {
-        data.position += right_direction * speed * ts;
+        position += right_direction * speed * ts;
     }
     if (glfwGetKey(window, GLFW_KEY_Q)) {
-        data.position += up_direction * speed * ts;
+        position += up_direction * speed * ts;
     } else if (glfwGetKey(window, GLFW_KEY_E)) {
-        data.position -= up_direction * speed * ts;
+        position -= up_direction * speed * ts;
     }
 
     glm::dvec2 delta = (now - last) * 0.002;
@@ -79,7 +79,7 @@ void Camera::resize(uint32_t width, uint32_t height) {
 }
 
 void Camera::upload() {
-    data.view = glm::lookAt(data.position, data.position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
+    data.view = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
     auto w = static_cast<float>(width);
     auto h = static_cast<float>(height);
     data.project = glm::perspective(glm::radians(60.0f), w / h, 0.1f, 100.0f);

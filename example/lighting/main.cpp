@@ -99,7 +99,7 @@ int main() {
     auto renderer = interface->createRenderer();
 
     auto camera = new wen::Camera();
-    camera->data.position = glm::vec3(0.0f, 0.0f, 5.0f);
+    camera->position = glm::vec3(0.0f, 0.0f, 5.0f);
     camera->upload();
 
     auto imgui = new wen::Imgui();
@@ -143,7 +143,7 @@ int main() {
                      .setFloat("point_light.constant", 1.0f)
                      .setFloat("point_light.linear", 0.09f)
                      .setFloat("point_light.quadratic", 0.032f);
-        cube_program->setVec3("spotlight.position", camera->data.position)
+        cube_program->setVec3("spotlight.position", camera->position)
                      .setVec3("spotlight.direction", camera->direction)
                      .setVec3("spotlight.ambient", glm::vec3(0.0f, 0.0f, 0.0f))
                      .setVec3("spotlight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f))
@@ -153,7 +153,7 @@ int main() {
                      .setFloat("spotlight.quadratic", 0.032f)
                      .setFloat("spotlight.cut_off", glm::cos(glm::radians(12.5f)))
                      .setFloat("spotlight.outer_cut_off", glm::cos(glm::radians(15.0f)));
-        cube_program->setVec3("view_position", camera->data.position);
+        cube_program->setVec3("view_position", camera->position);
         glm::mat4 model = glm::mat4(1.0f);
         for (unsigned int i = 0; i < 10; i++) {
             model = glm::mat4(1.0f);

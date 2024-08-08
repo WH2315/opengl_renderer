@@ -13,11 +13,11 @@ public:
     void upload();
 
     struct CameraData {
-        glm::vec3 position{0.0f, 0.0f, 0.0f};
         glm::mat4 view;
         glm::mat4 project;
     } data;
 
+    glm::vec3 position;
     glm::vec3 direction;
     bool cursor_locked = false;
 

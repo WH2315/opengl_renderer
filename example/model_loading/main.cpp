@@ -105,7 +105,7 @@ int main() {
         program->setMat4("model", _model)
                 .setMat4("view", camera->data.view)
                 .setMat4("project", camera->data.project);
-        program->setVec3("view_position", camera->data.position);
+        program->setVec3("view_position", camera->position);
         program->setVec3("light.position", light_position)
                 .setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f))
                 .setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f))
@@ -135,7 +135,7 @@ int main() {
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
         ImGui::End();
         ImGui::Begin("Scene");
-        ImGui::Text("camera position: (%.2f, %.2f, %.2f)", camera->data.position.x, camera->data.position.y, camera->data.position.z);
+        ImGui::Text("camera position: (%.2f, %.2f, %.2f)", camera->position.x, camera->position.y, camera->position.z);
         ImGui::Text("light position: (%.2f, %.2f, %.2f)", light_position.x, light_position.y, light_position.z);
         ImGui::End();
         imgui->end();

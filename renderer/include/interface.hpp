@@ -9,6 +9,7 @@
 #include "resources/texture_2d.hpp"
 #include "resources/model.hpp"
 #include "resources/framebuffer.hpp"
+#include "resources/uniform_buffer.hpp"
 
 namespace wen {
 
@@ -25,6 +26,7 @@ public:
     std::shared_ptr<Texture2D> createTexture2D(const std::string& filename, const TextureInfos& infos = {});
     std::shared_ptr<Model> loadModel(const std::string& filename);
     std::shared_ptr<Framebuffer> createFramebuffer(const FramebufferAttachment& framebuffer_attachment);
+    std::shared_ptr<UniformBuffer> createUniformBuffer(uint32_t size, uint32_t binding);
 
 private:
     std::string path_;
