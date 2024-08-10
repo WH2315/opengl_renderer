@@ -1,6 +1,7 @@
 #include "resources/mesh.hpp"
 #include "resources/vertex_buffer.hpp"
 #include "resources/index_buffer.hpp"
+#include "core/log.hpp"
 
 namespace wen {
 
@@ -29,6 +30,8 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vec
 void Mesh::draw(const std::shared_ptr<ShaderProgram>& program, uint32_t count) {
     uint32_t diffuse_number = 1;
     uint32_t specular_number = 1;
+    uint32_t normal_number = 1;
+    uint32_t height_number = 1;
     for (uint32_t i = 0; i < textures_.size(); i++) {
         std::string number;
         std::string name = textures_[i].type;
@@ -36,6 +39,10 @@ void Mesh::draw(const std::shared_ptr<ShaderProgram>& program, uint32_t count) {
             number = std::to_string(diffuse_number++);
         } else if (name == "texture_specular") {
             number = std::to_string(specular_number++);
+        } else if (name == "texture_normal") {
+            number = std::to_string(normal_number++);
+        } else if (name == "texture_height") {
+            number = std::to_string(height_number++);
         }
         program->setInt((name + number).c_str(), i);
         glBindTextureUnit(i, textures_[i].texture);

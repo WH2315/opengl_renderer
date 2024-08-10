@@ -19,6 +19,7 @@ public:
 
 private:
     uint32_t VAO_;
+    GLuint location_ = 0;
 };
 
 } // namespace wen

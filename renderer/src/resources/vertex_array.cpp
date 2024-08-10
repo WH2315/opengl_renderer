@@ -27,13 +27,12 @@ void VertexArray::attachVertexBuffer(const std::shared_ptr<VertexBuffer>& vertex
     this->bind();
     vertex_buffer->bind();
 
-    GLuint location = 0;
     const auto& layout = vertex_buffer->layout_;
     for (const auto& element : layout) {
         switch (element.type) {
             case GL_FLOAT: {
                 glVertexAttribPointer(
-                    location,
+                    location_,
                     element.size / 4,
                     element.type,
                     element.normalized ? GL_TRUE : GL_FALSE,
@@ -44,7 +43,7 @@ void VertexArray::attachVertexBuffer(const std::shared_ptr<VertexBuffer>& vertex
             }
             case GL_INT: {
                 glVertexAttribIPointer(
-                    location,
+                    location_,
                     element.size / 4,
                     element.type,
                     layout.stride_,
@@ -54,7 +53,7 @@ void VertexArray::attachVertexBuffer(const std::shared_ptr<VertexBuffer>& vertex
             }
             case GL_BOOL: {
                 glVertexAttribIPointer(
-                    location,
+                    location_,
                     element.size,
                     element.type,
                     layout.stride_,
@@ -67,8 +66,8 @@ void VertexArray::attachVertexBuffer(const std::shared_ptr<VertexBuffer>& vertex
                 break;
             }
         }
-        glEnableVertexAttribArray(location);
-        location++;
+        glEnableVertexAttribArray(location_);
+        location_++;
     }
 
     vertex_buffer->unbind();

@@ -15,6 +15,8 @@ public:
 
     void draw(const std::shared_ptr<ShaderProgram>& program, uint32_t count = 1);
 
+    auto& meshes() const { return meshes_; }
+
 private:
     void processNode(aiNode* node, const aiScene* scene);
     std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene);

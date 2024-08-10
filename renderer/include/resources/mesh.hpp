@@ -25,6 +25,8 @@ public:
     
     void draw(const std::shared_ptr<ShaderProgram>& program, uint32_t count = 1);
 
+    auto& vao() const { return vao_; }
+
 private:
     std::vector<Vertex> vertices_;
     std::vector<uint32_t> indices_;

@@ -77,6 +77,7 @@ int main() {
             .attach(light_frag)
             .link();
     
+    auto sphere = std::make_shared<wen::SphereGeometry>(0.5f, 128.0f, 64.0f);
     auto _model = interface->loadModel("nanosuit/nanosuit.obj");
     auto modle_frag = interface->createShader("geometry/model.frag", wen::ShaderStage::eFragment);
     auto model_program = interface->createShaderProgram();
@@ -93,6 +94,66 @@ int main() {
             .link();
     
     auto _skybox = new skybox(skybox_program);
+
+    auto rock = interface->loadModel("rock/rock.obj");
+    auto planet = interface->loadModel("planet/planet.obj");
+    auto asteroids_vert = interface->createShader("geometry/asteroids.vert", wen::ShaderStage::eVertex);
+    auto asteroids_frag = interface->createShader("geometry/asteroids.frag", wen::ShaderStage::eFragment);
+    auto asteroids_program = interface->createShaderProgram();
+    auto planet_vert = interface->createShader("geometry/planet.vert", wen::ShaderStage::eVertex);
+    auto planet_frag = interface->createShader("geometry/planet.frag", wen::ShaderStage::eFragment);
+    auto planet_program = interface->createShaderProgram();
+    asteroids_program->attach(asteroids_vert)
+            .attach(asteroids_frag)
+            .link();
+    planet_program->attach(planet_vert)
+            .attach(planet_frag)
+            .link();
+    
+    unsigned int amount = 100000;
+    glm::mat4* modelMatrices;
+    modelMatrices = new glm::mat4[amount];
+    srand(static_cast<unsigned int>(glfwGetTime()));
+    float radius = 15.0f;
+    float offset = 1.5f;
+    for (unsigned int i = 0; i < amount; i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        float angle = (float)i / (float)amount * 360.0f;
+        float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+        float x = sin(angle) * radius + displacement;
+        displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+        float y = displacement * 0.4f;
+        displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+        float z = cos(angle) * radius + displacement;
+        model = glm::translate(model, glm::vec3(x, y, z));
+
+        float scale = (rand() % 20) / 1000.0f + 0.001;
+        model = glm::scale(model, glm::vec3(scale));
+
+        float rotAngle = (rand() % 360);
+        model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+        modelMatrices[i] = model;
+    }
+
+    auto buffer = interface->createVertexBuffer(amount * sizeof(glm::mat4));
+    buffer->setData(modelMatrices);
+    buffer->setVertexLayout({
+        {"model", wen::VertexType::eFloat4},
+        {"model", wen::VertexType::eFloat4},
+        {"model", wen::VertexType::eFloat4},
+        {"model", wen::VertexType::eFloat4}
+    });
+
+    for (auto [name, mesh] : rock->meshes()) {
+        mesh->vao()->attachVertexBuffer(buffer);
+        mesh->vao()->bind();
+        glVertexAttribDivisor(3, 1);
+        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(5, 1);
+        glVertexAttribDivisor(6, 1);
+        mesh->vao()->unbind();
+    }
 
     auto texture1 = interface->createTexture2D("marble.jpg");
     auto texture2 = interface->createTexture2D("metal.png");
@@ -121,6 +182,8 @@ int main() {
     auto renderer = interface->createRenderer();
 
     auto camera = new wen::Camera();
+    camera->position = glm::vec3(0.0f, 0.0f, 20.0f);
+    camera->upload();
 
     auto imgui = new wen::Imgui();
 
@@ -245,10 +308,28 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-2.5f, -0.5f, 0.0f));
         model = glm::scale(model, glm::vec3(0.2f));
+        model_program->setInt("mode", 0);
         model_program->setMat4("model", model);
         model_program->setVec3("view_position", camera->position);
         renderer->drawModel(_model, model_program);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0f));
+        model_program->setInt("mode", 1);
+        model_program->setMat4("model", model);
+        renderer->drawGeometry(sphere);
         renderer->unbindResources(model_program);
+
+        // draw plant and rocks
+        renderer->bindResources(planet_program);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-7.5f, -1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
+        planet_program->setMat4("model", model);
+        renderer->drawModel(planet, planet_program);
+        renderer->unbindResources(planet_program);
+        renderer->bindResources(asteroids_program);
+        renderer->drawModel(rock, asteroids_program, amount);
+        renderer->unbindResources(asteroids_program);
 
         // draw skybox
         glDepthFunc(GL_LEQUAL);
@@ -305,12 +386,21 @@ int main() {
     window.reset();
     camera_uniforms.reset();
     skybox_program.reset();
+    planet_program.reset();
+    planet_vert.reset();
+    planet_frag.reset();
+    asteroids_program.reset();
+    asteroids_vert.reset();
+    asteroids_frag.reset();
+    rock.reset();
+    planet.reset();
     skybox_vert.reset();
     skybox_frag.reset();
     skybox_cube.reset();
     model_program.reset();
     modle_frag.reset();
     _model.reset();
+    sphere.reset();
     light_program.reset();
     light_frag.reset();
     light.reset();

@@ -77,6 +77,10 @@ std::shared_ptr<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
     std::vector<ModelTexture> specular_maps = loadTextures(material, aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
+    std::vector<ModelTexture> normal_maps = loadTextures(material, aiTextureType_HEIGHT, "texture_normal");
+    textures.insert(textures.end(), normal_maps.begin(), normal_maps.end());
+    std::vector<ModelTexture> height_maps = loadTextures(material, aiTextureType_AMBIENT, "texture_height");
+    textures.insert(textures.end(), height_maps.begin(), height_maps.end());
 
     return std::make_shared<Mesh>(vertices, indices, textures);
 }
