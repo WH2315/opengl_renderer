@@ -6,7 +6,10 @@
 class skybox {
 public:
     uint32_t id;
-    skybox(const std::shared_ptr<wen::ShaderProgram>& program) {
+    std::shared_ptr<wen::BoxGeometry> skybox_cube;
+    std::shared_ptr<wen::ShaderProgram> shader_program;
+
+    skybox() {
         glGenTextures(1, &id);
         glBindTexture(GL_TEXTURE_CUBE_MAP, id);
 
@@ -37,8 +40,30 @@ public:
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        program->bind();
-        program->setInt("skybox", 0);
-        program->unbind();
+        skybox_cube = std::make_shared<wen::BoxGeometry>();
+        auto vert = std::make_shared<wen::Shader>("example/resources/shaders/skybox.vert", wen::ShaderStage::eVertex);
+        auto frag = std::make_shared<wen::Shader>("example/resources/shaders/skybox.frag", wen::ShaderStage::eFragment);
+        shader_program = std::make_shared<wen::ShaderProgram>();
+        shader_program->attach(vert).attach(frag).link();
+
+        shader_program->bind();
+        shader_program->setInt("skybox", 0);
+        shader_program->unbind();
     };
+
+    void draw(const std::shared_ptr<wen::Renderer>& renderer, const wen::Camera* camera) {
+        glDepthFunc(GL_LEQUAL);
+        renderer->bindResources(shader_program);
+        shader_program->setMat4("view", glm::mat4(glm::mat3(camera->data.view)));
+        shader_program->setMat4("project", camera->data.project);
+        renderer->drawGeometry(skybox_cube);
+        renderer->unbindResources(shader_program);
+        glDepthFunc(GL_LESS);
+    }
+
+    ~skybox() {
+        glDeleteTextures(1, &id);
+        skybox_cube.reset();
+        shader_program.reset();
+    }
 };

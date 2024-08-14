@@ -85,15 +85,7 @@ int main() {
             .attach(modle_frag)
             .link();
     
-    auto skybox_cube = std::make_shared<wen::BoxGeometry>();
-    auto skybox_vert = interface->createShader("skybox.vert", wen::ShaderStage::eVertex);
-    auto skybox_frag = interface->createShader("skybox.frag", wen::ShaderStage::eFragment);
-    auto skybox_program = interface->createShaderProgram();
-    skybox_program->attach(skybox_vert)
-            .attach(skybox_frag)
-            .link();
-    
-    auto _skybox = new skybox(skybox_program);
+    auto _skybox = new skybox();
 
     auto rock = interface->loadModel("rock/rock.obj");
     auto planet = interface->loadModel("planet/planet.obj");
@@ -332,13 +324,7 @@ int main() {
         renderer->unbindResources(asteroids_program);
 
         // draw skybox
-        glDepthFunc(GL_LEQUAL);
-        renderer->bindResources(skybox_program);
-        skybox_program->setMat4("view", glm::mat4(glm::mat3(camera->data.view)))
-                       .setMat4("project", camera->data.project);
-        renderer->drawGeometry(skybox_cube);
-        renderer->unbindResources(skybox_program);
-        glDepthFunc(GL_LESS);
+        _skybox->draw(renderer, camera);
 
         // draw windows
         renderer->bindResources(program);
@@ -385,7 +371,6 @@ int main() {
     texture2.reset();
     window.reset();
     camera_uniforms.reset();
-    skybox_program.reset();
     planet_program.reset();
     planet_vert.reset();
     planet_frag.reset();
@@ -394,9 +379,6 @@ int main() {
     asteroids_frag.reset();
     rock.reset();
     planet.reset();
-    skybox_vert.reset();
-    skybox_frag.reset();
-    skybox_cube.reset();
     model_program.reset();
     modle_frag.reset();
     _model.reset();

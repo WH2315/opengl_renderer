@@ -11,6 +11,7 @@ struct TextureInfos {
     TextureFilter mag_filter = TextureFilter::eLinear;
     TextureWrap wrap_s = TextureWrap::eRepeat;
     TextureWrap wrap_t = TextureWrap::eRepeat;
+    bool gamma = false;
 };
 
 class Texture2D final {

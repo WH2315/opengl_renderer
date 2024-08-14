@@ -18,10 +18,10 @@ Texture2D::Texture2D(const std::string& filename, const TextureInfos& infos) {
     height_ = height;
     GLenum internal_format = 0, data_format = 0;
     if (channels == 4) {
-        internal_format = GL_RGBA8;
+        internal_format = infos.gamma ? GL_SRGB8_ALPHA8 : GL_RGBA8;
         data_format = GL_RGBA;
     } else if (channels == 3) {
-        internal_format = GL_RGB8;
+        internal_format = infos.gamma ? GL_SRGB8 : GL_RGB8;
         data_format = GL_RGB;
     }
     internal_format_ = internal_format;

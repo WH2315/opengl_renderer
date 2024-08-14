@@ -19,25 +19,25 @@ Framebuffer::Framebuffer(const FramebufferAttachment& framebuffer_attachment)
 Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &fbo_);
     glDeleteTextures(color_attachment_indices_.size(), color_attachment_indices_.data());
-    glDeleteTextures(1, &depth_attachment_index_);
+    glDeleteRenderbuffers(1, &depth_attachment_index_);
 }
 
 void Framebuffer::invalidate() {
     if (fbo_) {
         glDeleteFramebuffers(1, &fbo_);
         glDeleteTextures(color_attachment_indices_.size(), color_attachment_indices_.data());
-        glDeleteTextures(1, &depth_attachment_index_);
+        glDeleteRenderbuffers(1, &depth_attachment_index_);
         color_attachment_indices_.clear();
         depth_attachment_index_ = 0;
     }
 
-    glCreateFramebuffers(1, &fbo_);
+    glGenFramebuffers(1, &fbo_);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
     auto w = framebuffer_attachment_.width, h = framebuffer_attachment_.height;
     if (!color_attachments_.empty()) {
         color_attachment_indices_.resize(color_attachments_.size());
-        glCreateTextures(GL_TEXTURE_2D, color_attachments_.size(), color_attachment_indices_.data());
+        glGenTextures(color_attachments_.size(), color_attachment_indices_.data());
         for (size_t i = 0; i < color_attachment_indices_.size(); i++) {
             auto texture = color_attachment_indices_[i];
             glBindTexture(GL_TEXTURE_2D, texture);
@@ -52,16 +52,10 @@ void Framebuffer::invalidate() {
     }
 
     if (depth_attachment_.type != AttachmentType::eNone) {
-        glCreateTextures(GL_TEXTURE_2D, 1, &depth_attachment_index_);
-        glBindTexture(GL_TEXTURE_2D, depth_attachment_index_);
-        auto texture = depth_attachment_index_;
-        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, w, h);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_attachment_index_, 0);
+        glGenRenderbuffers(1, &depth_attachment_index_);
+        glBindRenderbuffer(GL_RENDERBUFFER, depth_attachment_index_);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_attachment_index_);
     }
 
     if (color_attachment_indices_.size() > 1) {
