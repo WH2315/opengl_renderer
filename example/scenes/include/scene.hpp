@@ -22,6 +22,7 @@ public:
     virtual void destroy() = 0;
 
 protected:
+    glm::vec2 scene_size = {0, 0};
     std::shared_ptr<wen::Interface> interface_;
     std::shared_ptr<wen::Renderer> renderer_;
     std::shared_ptr<wen::Camera> camera_;

@@ -57,6 +57,7 @@ void SceneManager::update(float ts) {
     if (auto a = framebuffer_->getFramebufferAttachment();
         ViewportSize.x > 0 && ViewportSize.y > 0 && (a.width != ViewportSize.x || a.height != ViewportSize.y)) {
         framebuffer_->resize(ViewportSize.x, ViewportSize.y);
+        current_scene_->scene_size = ViewportSize;
         current_scene_->camera_->resize(ViewportSize.x, ViewportSize.y);
     }
     current_scene_->update(ts);
